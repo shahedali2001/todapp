@@ -1,18 +1,18 @@
-name: Build and Deploy React App to Azure Web App
+name: One-Click Build & Deploy React App to Azure Web App
 
-# Trigger manually or on push to main
+# Trigger on push to main branch or manual trigger
 on:
-  workflow_dispatch:    # Manual trigger
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Stable Node.js for React
+          node-version: '16' # Stable version for React
 
       # 3️⃣ Install dependencies
       - name: Install npm dependencies
@@ -30,17 +30,21 @@ jobs:
       - name: Build React app
         run: CI=false npm run build
 
-      # 5️⃣ Login to Azure
+      # 5️⃣ Azure Login
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # 6️⃣ Deploy React app to Azure Web App
-      - name: Deploy to Azure Web App
+      # 6️⃣ Deploy to Azure Web App
+      - name: Deploy React App to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'unicsolution'    # Azure Web App name
-          package: build              # Deploy build folder
-          slot-name: 'Production'
+          app-name: 'unicsolution'       # Your Azure Web App name
+          package: build                 # Deploy the production build folder
+          slot-name: 'Production'        # Optional: deploy to production slot
+
+
 
