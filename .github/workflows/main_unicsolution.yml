@@ -26,24 +26,19 @@ jobs:
         run: npm install
 
       # 4️⃣ Build React app
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'unicsolution'
-          slot-name: 'Production'
-          package: build
+      - name: Build React app
+        run: npm run build
 
-      # 5️⃣ Login to Azure
+      # 5️⃣ Azure login
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Service Principal JSON
 
-      # 6️⃣ Deploy to Azure Web App
+      # 6️⃣ Deploy build folder to Azure Web App
       - name: Deploy React app to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'unicsolution'    # Azure Web App name
-          package: build              # Sirf build folder deploy hoga
+          app-name: 'unicsolution'    # Azure Web App ka name
+          package: build              # Build folder deploy hoga
           slot-name: 'Production'
-
