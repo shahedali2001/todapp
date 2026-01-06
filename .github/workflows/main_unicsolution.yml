@@ -67,11 +67,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App (STAGING)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: unicsolution
+          slot-name: unicsolution-todoappgr   # 👈 staging slot name
           package: app.zip
+
 
 
 
