@@ -11,11 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -25,11 +23,23 @@ jobs:
       - name: Build React App
         run: CI=false npm run build
 
-      # 🔎 DEBUG STEP – confirm build is NOT empty
       - name: Verify build output
         run: |
-          echo "Build folder contents:"
-          ls -la build
+          echo "Listing root:"
+          ls -la
+          echo "Listing build folder:"
+          ls -la build || ls -la dist
+
+      - name: Create deployment package
+        run: |
+          if [ -d "build" ]; then
+            zip -r app.zip build
+          elif [ -d "dist" ]; then
+            zip -r app.zip dist
+          else
+            echo "❌ No build output found"
+            exit 1
+          fi
 
       - name: Azure Login
         uses: azure/login@v2
@@ -40,7 +50,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: unicsolution
-          package: build
+          package: app.zip
 
 
 
