@@ -19,11 +19,17 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install npm dependencies
+      - name: Install dependencies
         run: npm install
 
       - name: Build React App
         run: CI=false npm run build
+
+      # 🔎 DEBUG STEP – confirm build is NOT empty
+      - name: Verify build output
+        run: |
+          echo "Build folder contents:"
+          ls -la build
 
       - name: Azure Login
         uses: azure/login@v2
@@ -35,6 +41,8 @@ jobs:
         with:
           app-name: unicsolution
           package: build
+
+
 
 
 
