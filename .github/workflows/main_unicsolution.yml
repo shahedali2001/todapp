@@ -70,8 +70,10 @@ jobs:
       - name: Deploy to Azure Web App (STAGING)
         uses: azure/webapps-deploy@v3
         with:
+          app-name: unicsolution
           slot-name: unicsolution-todoappgr   # 👈 staging slot name
           package: app.zip
+
 
 
 
