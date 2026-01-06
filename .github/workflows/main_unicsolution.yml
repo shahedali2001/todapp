@@ -26,9 +26,12 @@ jobs:
         run: npm install
 
       # 4️⃣ Build React app
-      - name: Build React app
-        # CI environment mein ESLint warning se fail na ho
-        run: CI=false npm run build
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'unicsolution'
+          slot-name: 'Production'
+          package: build
 
       # 5️⃣ Login to Azure
       - name: Azure Login
@@ -43,3 +46,4 @@ jobs:
           app-name: 'unicsolution'    # Azure Web App name
           package: build              # Sirf build folder deploy hoga
           slot-name: 'Production'
+
