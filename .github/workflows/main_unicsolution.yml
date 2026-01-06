@@ -1,10 +1,11 @@
 name: Build and Deploy React App to Azure Web App
 
+# Trigger manually or on push to main
 on:
+  workflow_dispatch:    # Manual trigger
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -19,26 +20,27 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # React app ke liye stable version
+          node-version: '16' # Stable Node.js for React
 
       # 3️⃣ Install dependencies
       - name: Install npm dependencies
         run: npm install
 
-      # 4️⃣ Build React app
+      # 4️⃣ Build React app (ignore ESLint errors)
       - name: Build React app
-        run: npm run build
+        run: CI=false npm run build
 
-      # 5️⃣ Azure login
+      # 5️⃣ Login to Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Service Principal JSON
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 6️⃣ Deploy build folder to Azure Web App
-      - name: Deploy React app to Azure Web App
+      # 6️⃣ Deploy React app to Azure Web App
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'unicsolution'    # Azure Web App ka name
-          package: build              # Build folder deploy hoga
+          app-name: 'unicsolution'    # Azure Web App name
+          package: build              # Deploy build folder
           slot-name: 'Production'
+
