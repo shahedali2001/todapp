@@ -1,50 +1,49 @@
-name: One-Click Build & Deploy React App to Azure Web App
+name: Build & Deploy React App to Azure Web App
 
-# Trigger on push to main branch or manual trigger
 on:
+  workflow_dispatch:  # Manual trigger
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # 1️⃣ Checkout code
+      - uses: actions/checkout@v4
 
       # 2️⃣ Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16' # Stable version for React
+          node-version: '16'
 
       # 3️⃣ Install dependencies
       - name: Install npm dependencies
         run: npm install
 
-      # 4️⃣ Build React app (ignore ESLint errors)
+      # 4️⃣ Build React app, ignore ESLint errors
       - name: Build React app
         run: CI=false npm run build
 
-      # 5️⃣ Azure Login
+      # 5️⃣ Login to Azure
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-      # 6️⃣ Deploy to Azure Web App
-      - name: Deploy React App to Azure Web App
+      # 6️⃣ Deploy build folder to Azure Web App
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'unicsolution'       # Your Azure Web App name
-          package: build                 # Deploy the production build folder
-          slot-name: 'Production'        # Optional: deploy to production slot
+          app-name: 'unicsolution'
+          package: build
+          slot-name: 'Production'
+
+
 
 
 
