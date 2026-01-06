@@ -1,10 +1,11 @@
-name: Build & Deploy React App to Azure Web App
+name: Build and Deploy React App to Azure Web App
 
+# Manual trigger aur main branch push dono support
 on:
-  workflow_dispatch:  # Manual trigger
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -12,36 +13,40 @@ jobs:
 
     steps:
       # 1️⃣ Checkout code
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # 2️⃣ Setup Node.js
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '16'  # React ke liye stable
 
       # 3️⃣ Install dependencies
       - name: Install npm dependencies
         run: npm install
 
-      # 4️⃣ Build React app, ignore ESLint errors
-      - name: Build React app
+      # 4️⃣ Build React app with CI=false to ignore ESLint errors
+      - name: Build React App
         run: CI=false npm run build
 
       # 5️⃣ Login to Azure
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # 6️⃣ Deploy build folder to Azure Web App
+      # 6️⃣ Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'unicsolution'
-          package: build
+          app-name: 'unicsolution'    # Azure Web App name
+          package: build              # build folder deploy hoga
           slot-name: 'Production'
+
+
 
 
 
